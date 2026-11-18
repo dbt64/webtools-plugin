@@ -9,7 +9,7 @@
   "scripts": {
     "toolchain:check": "node scripts/sync-toolchain.mjs --check",
     "toolchain:sync": "node scripts/sync-toolchain.mjs",
-    "test": "node --experimental-transform-types --test"
+    "test": "node --experimental-transform-types --test --test-concurrency=2"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
