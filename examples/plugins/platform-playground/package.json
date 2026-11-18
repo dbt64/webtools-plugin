@@ -1,0 +1,12 @@
+{
+  "name": "webtools-plugin-platform-playground",
+  "version": "1.18.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "build": "node build.mjs",
+    "validate": "node webtools-plugin.mjs validate dist --host-version 0.1.0",
+    "pack": "node webtools-plugin.mjs pack dist --out ../../../release/webtools-plugin-platform-playground-1.18.0.wtplugin --host-version 0.1.0",
+    "inspect": "node webtools-plugin.mjs inspect ../../../release/webtools-plugin-platform-playground-1.18.0.wtplugin --host-version 0.1.0"
+  }
+}

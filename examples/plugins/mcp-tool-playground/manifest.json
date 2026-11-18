@@ -1,0 +1,82 @@
+{
+  "manifestVersion": 3,
+  "id": "org.webtools.mcp-tool-playground",
+  "name": "MCP 工具验收",
+  "description": "通过 MCP 接收参数并返回文本统计。",
+  "author": {
+    "name": "WebTools"
+  },
+  "version": "1.0.0",
+  "api": {
+    "apiMajor": 1,
+    "minHostVersion": "0.1.0"
+  },
+  "type": "plugin",
+  "requestedCapabilities": [],
+  "runtime": {
+    "kind": "node"
+  },
+  "compatibility": {
+    "platforms": [
+      "win32"
+    ],
+    "architectures": [
+      "x64"
+    ]
+  },
+  "features": [
+    {
+      "id": "text-stats",
+      "title": "文本统计",
+      "description": "计算传入文字的 Unicode 字符数，忽略首尾空白。",
+      "presentation": {
+        "type": "command"
+      },
+      "entry": {
+        "kind": "node-command",
+        "module": "text-stats.cjs"
+      },
+      "mcpTool": {
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "characterCount": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "characterCount"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ],
+  "runtimeFiles": [
+    {
+      "path": "text-stats.cjs",
+      "role": "node-command",
+      "mediaType": "text/javascript"
+    }
+  ],
+  "dependencies": [],
+  "package": {
+    "format": "wtplugin",
+    "packageVersion": 1
+  }
+}

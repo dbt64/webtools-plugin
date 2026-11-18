@@ -1,0 +1,17 @@
+{
+  "name": "create-webtools-plugin",
+  "version": "1.16.2",
+  "description": "Create independent WebTools Manifest v3 plugins",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "bin": {
+    "create-webtools-plugin": "bin/create-webtools-plugin.mjs"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "license": "MIT"
+}

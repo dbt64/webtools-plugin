@@ -1,0 +1,21 @@
+<main class="wt-container wt-stack">
+  <section class="wt-card wt-stack" aria-labelledby="search-title">
+    <h2 id="search-title">宿主子输入和动态结果</h2>
+    <p class="wt-copy">在窗口顶部输入「剪贴板」「文件」或「窗口」，用方向键和 Enter 选择结果。</p>
+    <div><button id="open-search" class="wt-button wt-button-primary" type="button" disabled>打开宿主子输入</button></div>
+    <p id="search-status" class="wt-copy" role="status">等待宿主连接</p>
+  </section>
+  <section class="wt-card wt-stack" aria-labelledby="files-title">
+    <h2 id="files-title">选中文件上下文</h2>
+    <p id="files-status" class="wt-copy" role="status">在资源管理器选中文件，通过超级面板打开「查看选中文件」。</p>
+    <ul id="selected-files" class="file-list"></ul>
+  </section>
+  <section class="wt-card wt-stack" aria-labelledby="window-title">
+    <h2 id="window-title">自定义窗口</h2>
+    <div class="starter-actions">
+      <button id="open-child" class="wt-button wt-button-primary" type="button" disabled>打开子窗口</button>
+      <button id="close-child" class="wt-button" type="button" disabled>关闭子窗口</button>
+    </div>
+    <p id="window-status" class="wt-copy" role="status">等待宿主连接</p>
+  </section>
+</main>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>插件平台验收</title>
+    <link rel="stylesheet" href="./sdk/ui.css">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">WEBTOOLS · PLUGIN PLATFORM</p>
+          <h1>插件平台验收</h1>
+        </div>
+        <span id="runtime-badge" class="badge wt-tag">正在连接宿主</span>
+      </header>
+
+      <section class="card">
+        <p class="eyebrow">BROWSER WORKFLOW</p><h2>受控网页自动操作</h2>
+        <p class="muted">打开本插件提供的本地示例网页，自动填写文字、点击按钮、读取结果并截图。网页浏览器可手动操作；失焦可隐藏插件，召回后可查看结果。结束插件会关闭它创建的浏览器。</p>
+        <input id="workflow-text" class="text-input wt-input" value="WebTools 网页验收" aria-label="网页测试文字">
+        <div class="button-row"><button id="workflow-browser" class="button button-primary">运行网页示例</button><button id="workflow-close" class="button button-secondary">关闭浏览器</button></div>
+        <p id="workflow-browser-status" class="muted" role="status">等待操作</p><img id="workflow-browser-image" alt="网页截图" hidden style="max-width:100%">
+      </section>
+      <section class="card">
+        <p class="eyebrow">IMAGE WORKFLOW</p><h2>图片缩放与格式转换</h2>
+        <p class="muted">选择 PNG/JPEG/WebP，设置输出宽度；宿主处理后预览并可下载。留空高度时保留比例。</p>
+        <input id="workflow-image-file" type="file" accept="image/png,image/jpeg,image/webp" class="text-input wt-input">
+        <label>输出宽度 <input id="workflow-image-width" type="number" value="320" min="1" max="4096"></label>
+        <select id="workflow-image-format"><option value="png">PNG</option><option value="jpeg">JPEG</option></select>
+        <button id="workflow-image-run" class="button button-primary">转换图片</button><a id="workflow-image-download" hidden>下载结果</a>
+        <p id="workflow-image-status" class="muted" role="status">等待操作</p><img id="workflow-image-result" alt="转换后的图片" hidden style="max-width:100%">
+      </section>
+      <section class="card">
+        <p class="eyebrow">MEDIA WORKFLOW</p><h2>音视频格式转换</h2>
+        <p class="muted">选择音视频，或生成一秒示例 WAV。宿主内置 FFmpeg，点击转换后选择输出位置。取消转换保留已有目标文件；单次最长两分钟。视频转 MP4/WebM，音频转 MP3/WAV。</p>
+        <div class="button-row"><button id="workflow-media-select" class="button button-secondary">选择音视频</button><button id="workflow-media-sample" class="button button-secondary">生成示例 WAV</button></div>
+        <p id="workflow-media-path" class="muted">尚未选择</p>
+        <select id="workflow-media-format"><option value="mp3">MP3 音频</option><option value="wav">WAV 音频</option><option value="mp4">MP4 视频</option><option value="webm">WebM 视频</option></select>
+        <div class="button-row"><button id="workflow-media-run" class="button button-primary">转换并保存</button><button id="workflow-media-cancel" class="button button-secondary" disabled>取消转换</button></div>
+        <p id="workflow-media-status" class="muted" role="status">等待操作</p>
+      </section>
+      <section class="card" aria-labelledby="agent-note-heading">
+        <p class="eyebrow">AI AGENT / MCP</p><h2 id="agent-note-heading">AI 操作插件验收</h2>
+        <p class="muted">在 WebTools 设置 → AI 设置开启本地 MCP 服务，并启用本插件的工具。让 Agent 调用 agent-note：传 text 写入便笺，传空对象读取。这里显示的是插件私有数据。</p>
+        <pre id="agent-note-value" class="context-content">尚未读取</pre>
+        <button id="agent-note-refresh" class="button button-primary">读取 AI 便笺</button>
+      </section>
+
+      <section class="card" aria-labelledby="shared-ai-heading">
+        <p class="eyebrow">SHARED AI</p><h2 id="shared-ai-heading">共享 AI 调用验收</h2>
+        <p class="muted">插件通过 WebTools 宿主调用已配置的共享 AI 服务。每次请求由宿主确认；服务配置和凭据由宿主管理，插件不会直接访问服务商或读取密钥。此区域验收 ai.complete，不代表 MCP 工具注册。</p>
+        <label class="field-label" for="shared-ai-prompt">发送给共享 AI 的内容</label>
+        <textarea id="shared-ai-prompt" class="text-input wt-input shared-ai-prompt" rows="3" maxlength="12000" placeholder="输入一条简短的测试请求"></textarea>
+        <div class="button-row"><button id="shared-ai-send" class="button button-primary" type="button" disabled>发送至共享 AI</button><button id="shared-ai-cancel" class="button button-secondary" type="button" disabled>取消请求</button></div>
+        <p id="shared-ai-status" class="muted" role="status">正在连接宿主</p>
+        <label class="field-label" for="shared-ai-result">宿主返回结果</label>
+        <pre id="shared-ai-result" class="context-content" aria-live="polite">尚无结果</pre>
+      </section>
+
+      <section class="card" aria-labelledby="tasks-heading">
+        <p class="eyebrow">SCHEDULED TASKS</p><h2 id="tasks-heading">定时任务验收</h2>
+        <p class="muted">逐项确认后由 Rust 托盘调度。关闭插件及 Manager 窗口，任务仍会在时间到达时唤醒临时运行环境。Cron 使用本机时区。</p>
+        <label class="field-label" for="task-code">稳定任务代码（插件内唯一）</label><input id="task-code" class="text-input wt-input" value="schedule-test">
+        <label class="field-label" for="task-cron">周期表达式（分 时 日 月 周）</label><input id="task-cron" class="text-input wt-input" value="* * * * *">
+        <label class="field-label" for="task-start">周期起始时间（可选）</label><input id="task-start" type="datetime-local" class="text-input wt-input">
+        <label class="field-label" for="task-end">周期结束时间（可选）</label><input id="task-end" type="datetime-local" class="text-input wt-input">
+        <div class="button-row"><button id="task-once" class="button button-primary">30 秒后执行一次</button><button id="task-recurring" class="button button-secondary">创建周期任务</button><button id="task-failure" class="button button-secondary">30 秒后故意失败</button><button id="task-refresh" class="button button-secondary">刷新任务与统计</button></div>
+        <p id="task-status" class="muted" role="status">等待操作</p><div id="task-list"></div><pre id="task-history" class="context-content">尚无执行记录</pre>
+      </section>
+      <section class="card" aria-labelledby="storage-heading">
+        <p class="eyebrow">PLUGIN STORAGE</p><h2 id="storage-heading">插件数据存储</h2>
+        <p class="muted">键值数据可跨窗口和插件更新保留；插件卸载时可选择保留或删除私有数据。</p>
+        <input id="storage-key" class="text-input wt-input" value="note-1" aria-label="数据键名">
+        <input id="storage-value" class="text-input wt-input" placeholder="输入要保存的文字" aria-label="数据内容">
+        <div class="button-row"><button id="storage-save" class="button button-primary">保存</button><button id="storage-load" class="button button-secondary">读取</button><button id="storage-list" class="button button-secondary">列出键名</button><button id="storage-delete" class="button button-secondary">删除</button></div>
+        <p id="storage-status" class="muted" role="status">等待操作</p>
+      </section>
+      <section class="card" aria-labelledby="storage-files-heading">
+        <p class="eyebrow">PLUGIN FILES</p><h2 id="storage-files-heading">插件文件存储</h2>
+        <p class="muted">选择本地文件后点击“保存所选文件”，内容才会复制到插件存储。修改本地文件后请重新选择并保存；读取下载的是插件中已保存的副本。每个文件最多 4 MiB。</p>
+        <label class="field-label" for="storage-file-path">插件内相对路径</label>
+        <input id="storage-file-path" class="text-input wt-input" value="attachments/example.bin" aria-label="插件内相对路径">
+        <label class="field-label" for="storage-file-input">选择本地文件</label>
+        <input id="storage-file-input" class="text-input wt-input" type="file" aria-label="选择要保存的本地文件">
+        <div class="button-row"><button id="storage-file-write" class="button button-primary" type="button">保存所选文件</button><button id="storage-file-read" class="button button-secondary" type="button">读取并下载</button><button id="storage-file-delete" class="button button-secondary" type="button">删除此文件</button></div>
+        <label class="field-label" for="storage-file-prefix">列出路径前缀（可留空）</label>
+        <div class="button-row"><input id="storage-file-prefix" class="text-input wt-input storage-prefix" placeholder="例如 attachments/" aria-label="文件列表前缀"><button id="storage-file-list" class="button button-secondary" type="button">列出文件</button></div>
+        <p id="storage-files-status" class="muted" role="status">等待操作</p>
+      </section>
+      <section class="card" aria-labelledby="storage-backup-heading">
+        <p class="eyebrow">PLUGIN BACKUP</p><h2 id="storage-backup-heading">备份与恢复</h2>
+        <p class="muted">备份包含本插件的键值数据和文件。导入会替换本插件当前的键值数据和文件，不包含设置或共享 AI 凭据。</p>
+        <div class="button-row"><button id="storage-backup-export" class="button button-primary" type="button">导出备份</button><button id="storage-backup-pick" class="button button-secondary" type="button">选择备份并导入</button><input id="storage-backup-input" type="file" accept="application/json,.json" hidden></div>
+        <p id="storage-backup-status" class="muted" role="status">等待操作</p>
+      </section>
+      <section class="card" aria-labelledby="paste-heading">
+        <p class="eyebrow">PASTE</p><h2 id="paste-heading">粘贴回原应用</h2>
+        <p class="muted">先在记事本等应用放好光标，然后从超级面板打开插件。点击后返回原应用并粘贴文字。</p>
+        <input id="paste-text" class="text-input wt-input" value="WebTools 测试文字" aria-label="要粘贴的文字">
+        <button id="paste-send" class="button button-primary" type="button">粘贴到原应用</button>
+        <p id="paste-status" class="muted" role="status">等待操作</p>
+      </section>
+      <section class="card" aria-labelledby="notification-heading">
+        <p class="eyebrow">NOTIFICATION</p><h2 id="notification-heading">系统通知验收</h2>
+        <p class="muted">点击后由 WebTools 发送 Windows 系统通知。</p>
+        <button id="notification-send" class="button button-primary" type="button">发送测试通知</button>
+        <p id="notification-status" class="muted" role="status">等待操作</p>
+      </section>
+      <section class="card" aria-labelledby="screen-heading">
+        <p class="eyebrow">SCREEN</p><h2 id="screen-heading">显示器信息与屏幕截图</h2>
+        <p class="muted">读取显示器名称、尺寸、工作区和缩放比例；点击截图按钮后捕获所选显示器。截图由当前插件页面的点击操作触发。</p>
+        <div class="button-row">
+          <select id="screen-display" class="text-input wt-input" aria-label="选择显示器"><option value="">主显示器</option></select>
+          <button id="screen-refresh" class="button button-secondary" type="button">读取显示器</button>
+          <button id="screen-capture" class="button button-primary" type="button">截取屏幕</button>
+        </div>
+        <p id="screen-status" class="muted" role="status">等待读取显示器信息</p>
+        <img id="screen-preview" alt="显示器截图预览" style="max-width:100%;max-height:420px;display:none">
+      </section>
+      <section class="card" aria-labelledby="clipboard-heading">
+        <p class="eyebrow">CLIPBOARD</p><h2 id="clipboard-heading">剪贴板验收</h2>
+        <p class="muted">测试文字、PNG 图片与文件列表的读取和写入。写入文件使用下方“选择文件”选中的项目。</p>
+        <input id="clipboard-text" class="text-input wt-input" placeholder="输入要复制的文字">
+        <div class="button-row"><button id="clipboard-read-text" class="button button-secondary">读取文字</button><button id="clipboard-write-text" class="button button-primary">复制文字</button><button id="clipboard-read-image" class="button button-secondary">读取图片</button><button id="clipboard-write-image" class="button button-secondary">复制已读图片</button><button id="clipboard-read-files" class="button button-secondary">读取文件</button><button id="clipboard-write-files" class="button button-secondary">复制所选文件</button></div>
+        <p id="clipboard-status" class="muted" role="status">等待操作</p><img id="clipboard-image" alt="剪贴板图片预览" style="max-width:180px;max-height:120px;display:none">
+      </section>
+      <section class="card" aria-labelledby="files-heading">
+        <p class="eyebrow">FILES</p><h2 id="files-heading">选择并打开文件或文件夹</h2>
+        <p class="muted">使用系统选择窗口选取项目，再用系统默认程序或文件管理器打开。</p>
+        <div class="button-row"><button id="choose-file" class="button button-primary" type="button">选择文件</button><button id="choose-folder" class="button button-secondary" type="button">选择文件夹</button><button id="open-selected-path" class="button button-secondary" type="button">打开所选项目</button></div>
+        <p id="files-status" class="muted" role="status">尚未选择</p>
+      </section>
+      <section class="card" aria-labelledby="window-heading">
+        <p class="eyebrow">CUSTOM WINDOW</p><h2 id="window-heading">自定义窗口验收</h2>
+        <p class="muted">创建独立子窗口，在窗口之间发送文字，测试显示、隐藏、尺寸与置顶。</p>
+        <input id="window-message" class="text-input wt-input" placeholder="输入要发送的文字">
+        <p id="window-status" class="muted">正在连接窗口能力</p>
+        <div class="button-row">
+          <button id="window-create" class="button button-primary" type="button">打开子窗口</button>
+          <button id="window-send" class="button button-secondary" type="button">发送文字</button>
+          <button id="window-hide" class="button button-secondary" type="button">隐藏</button>
+          <button id="window-show" class="button button-secondary" type="button">显示</button>
+          <button id="window-resize" class="button button-secondary" type="button">调整尺寸</button>
+          <button id="window-top" class="button button-secondary" type="button">切换置顶</button>
+          <button id="window-close" class="button button-secondary" type="button">关闭子窗口</button>
+        </div>
+      </section>
+      <section class="card" aria-labelledby="lifecycle-heading">
+        <p class="eyebrow">LIFECYCLE</p><h2 id="lifecycle-heading">窗口进入与显示记录</h2>
+        <p class="muted">失焦隐藏后召回保留计数；从面板再次进入更新上下文。Esc 结束后重新打开会建立新页面。</p>
+        <pre id="lifecycle-log" class="context-content" aria-live="polite">等待宿主事件</pre>
+      </section>
+      <section class="card search-demo-card" aria-labelledby="search-demo-heading">
+        <div class="section-heading">
+          <div><p class="eyebrow">HOST SUBINPUT</p><h2 id="search-demo-heading">宿主搜索输入与动态结果</h2></div>
+          <button id="open-host-search" class="button button-primary" type="button">打开搜索</button>
+        </div>
+        <p class="muted">搜索本地示例条目；结果由插件实时更新，选择结果后回填到插件输入框。</p>
+        <p id="search-demo-status" class="search-demo-status" role="status" aria-live="polite">正在连接宿主，连接完成后即可打开搜索。</p>
+        <div id="search-demo-selection" class="selection-preview">尚未选择结果</div>
+      </section>
+
+      <section class="card context-card" aria-labelledby="context-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">INVOCATION</p>
+            <h2 id="context-heading">当前入口上下文</h2>
+          </div>
+          <span id="context-badge" class="badge badge-muted wt-tag">等待读取</span>
+        </div>
+        <p id="context-summary" class="muted">正在读取本次打开携带的内容。</p>
+        <pre id="context-content" class="context-content">—</pre>
+        <div class="button-row">
+        <button id="apply-context" class="button wt-button button-secondary" type="button" disabled>填入输入框</button>
+          <button id="clear-context" class="button wt-button button-quiet" type="button" disabled>清除上下文</button>
+        </div>
+      </section>
+
+      <section class="card input-card" aria-labelledby="input-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PLUGIN STATE</p>
+            <h2 id="input-heading">输入与状态</h2>
+          </div>
+          <span id="input-count" class="count-badge wt-tag">0 字符</span>
+        </div>
+        <label class="field-label" for="plugin-input">插件内输入</label>
+        <input id="plugin-input" class="text-input wt-input" type="text" placeholder="输入文字，或从当前上下文填入" autocomplete="off">
+        <div class="counter-row">
+          <div>
+            <p class="field-label">本次窗口计数</p>
+            <p class="counter-help">用于确认窗口隐藏后再次召回时，页面状态仍保留。</p>
+          </div>
+          <output id="counter-value" class="counter-value" aria-live="polite">0</output>
+        </div>
+        <div class="button-row">
+          <button id="increment" class="button wt-button button-primary" type="button">增加计数</button>
+          <button id="reset-counter" class="button wt-button button-secondary" type="button">重置</button>
+        </div>
+        <div class="shortcut-demo">
+          <div>
+            <p class="field-label">当前功能快捷键</p>
+            <p class="counter-help">在插件管理中设置后，可从任意应用直接打开当前功能。</p>
+          </div>
+          <output id="feature-shortcut" class="shortcut-value" aria-live="polite">读取中…</output>
+        </div>
+      </section>
+
+      <section class="card ui-demo-card" aria-labelledby="ui-demo-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">OPTIONAL SDK UI</p>
+            <h2 id="ui-demo-heading">插件基础样式预览</h2>
+          </div>
+          <label class="theme-toggle"><input id="theme-preview-toggle" class="wt-switch" type="checkbox" aria-label="切换浅色样式预览"><span>浅色预览</span></label>
+        </div>
+        <div id="theme-preview" class="ui-demo-surface" data-preview-theme="dark">
+          <div class="ui-demo-row">
+            <span class="wt-tag">状态标签</span>
+            <button class="wt-button wt-button-primary" type="button">主操作</button>
+            <button class="wt-button" type="button">次操作</button>
+            <button class="wt-button wt-tooltip" type="button" data-tooltip="由 data-tooltip 提供说明">提示</button>
+          </div>
+          <label class="wt-field">
+            <span class="wt-label">中英混排与长内容</span>
+            <input class="wt-input" type="text" value="WebTools 插件 UI · mixed English and 中文" aria-label="中英混排示例">
+          </label>
+          <p class="wt-copy wt-break-words">This optional style layer provides shared building blocks while leaving layout and product behavior to the plugin author. 这段较长的中英文说明用于观察窄窗口下的换行和溢出表现。</p>
+          <ul class="wt-list" aria-label="样式组件列表">
+            <li class="wt-list-item">列表项：键盘 Tab 可进入控件</li>
+            <li class="wt-menu-item" tabindex="0">菜单项：支持悬停和焦点样式</li>
+          </ul>
+          <div class="ui-demo-row">
+            <span class="wt-loading"><span class="wt-spinner" aria-hidden="true"></span>正在加载</span>
+            <span class="wt-empty">空状态</span>
+            <span class="wt-error" role="status">错误状态示例</span>
+          </div>
+        </div>
+        <p class="counter-help">此开关只切换示例区域的样式预览；插件实际主题仍由 WebTools 设置控制，可在窗口打开时切换宿主主题观察变量更新。</p>
+      </section>
+
+      <aside class="host-hint">
+        <span class="hint-dot" aria-hidden="true"></span>
+        <p>独立窗口切换由宿主标题栏右上角菜单提供：选择“分离为独立窗口”后，可检查任务栏、失焦与窗口恢复行为。</p>
+      </aside>
+
+      <footer id="status" class="status" role="status">插件页面已就绪，等待宿主上下文。</footer>
+    </main>
+    <script type="module" src="./workflow.mjs"></script>
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

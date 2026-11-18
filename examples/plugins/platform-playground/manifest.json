@@ -1,0 +1,382 @@
+{
+  "manifestVersion": 3,
+  "id": "org.webtools.plugin-platform-playground",
+  "name": "Plugin Platform Playground",
+  "description": "可复用的 WebTools 插件宿主交互验收样例。",
+  "author": {
+    "name": "WebTools"
+  },
+  "version": "1.18.0",
+  "api": {
+    "apiMajor": 1,
+    "minHostVersion": "0.1.0"
+  },
+  "type": "plugin",
+  "requestedCapabilities": [
+    "plugin.window.manage",
+    "system.file.select",
+    "system.path.open",
+    "clipboard.current.read",
+    "clipboard.write",
+    "system.notification",
+    "system.input.paste",
+    "system.screen.capture",
+    "plugin.storage.read",
+    "plugin.storage.write",
+    "plugin.tasks",
+    "sharedAI.complete",
+    "system.browser.automation",
+    "system.media.image",
+    "system.media.transcode"
+  ],
+  "runtime": {
+    "kind": "node",
+    "preload": "preload.cjs"
+  },
+  "compatibility": {
+    "platforms": [
+      "win32"
+    ],
+    "architectures": [
+      "x64"
+    ]
+  },
+  "features": [
+    {
+      "id": "playground",
+      "title": "插件平台验收",
+      "description": "验证宿主交互、插件生命周期、上下文、共享 AI 与常用系统能力。",
+      "commands": [
+        "plugin-test",
+        "插件测试"
+      ],
+      "entry": {
+        "kind": "web-bundle",
+        "document": "web/index.html"
+      },
+      "presentation": {
+        "type": "window",
+        "defaultWidth": 760,
+        "defaultHeight": 560,
+        "minWidth": 440,
+        "minHeight": 420,
+        "resizable": true,
+        "blurBehavior": "temporary-hide"
+      },
+      "acceptedContexts": [
+        {
+          "type": "none",
+          "sources": []
+        },
+        {
+          "type": "text",
+          "sources": [
+            "launcher-input",
+            "clipboard",
+            "selected-text"
+          ]
+        },
+        {
+          "type": "files",
+          "sources": [
+            "explorer-selection"
+          ],
+          "maxItems": 64
+        },
+        {
+          "type": "directories",
+          "sources": [
+            "explorer-selection"
+          ],
+          "maxItems": 64
+        }
+      ],
+      "requiredCapabilities": [
+        "plugin.window.manage",
+        "system.file.select",
+        "system.path.open",
+        "clipboard.current.read",
+        "clipboard.write",
+        "system.notification",
+        "system.input.paste",
+        "system.screen.capture",
+        "plugin.storage.read",
+        "plugin.storage.write",
+        "plugin.tasks",
+        "sharedAI.complete",
+        "system.browser.automation",
+        "system.media.image",
+        "system.media.transcode"
+      ],
+      "icon": {
+        "kind": "host",
+        "key": "sparkles"
+      }
+    },
+    {
+      "id": "image-context",
+      "title": "查看选中图片（验收）",
+      "description": "验证图片文件匹配与上下文传递。",
+      "requiredCapabilities": [
+        "plugin.window.manage",
+        "system.file.select",
+        "system.path.open",
+        "clipboard.current.read",
+        "clipboard.write",
+        "system.notification",
+        "system.input.paste",
+        "system.screen.capture",
+        "plugin.storage.read",
+        "plugin.storage.write",
+        "system.browser.automation",
+        "system.media.image",
+        "system.media.transcode"
+      ],
+      "entry": {
+        "kind": "web-bundle",
+        "document": "web/index.html"
+      },
+      "acceptedContexts": [
+        {
+          "type": "files",
+          "sources": [
+            "explorer-selection"
+          ],
+          "extensions": [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".webp"
+          ],
+          "maxItems": 64
+        }
+      ]
+    },
+    {
+      "id": "folder-context",
+      "title": "查看选中文件夹（验收）",
+      "description": "验证文件夹匹配与上下文传递。",
+      "requiredCapabilities": [
+        "plugin.window.manage",
+        "system.file.select",
+        "system.path.open",
+        "clipboard.current.read",
+        "clipboard.write",
+        "system.notification",
+        "system.input.paste",
+        "system.screen.capture",
+        "plugin.storage.read",
+        "plugin.storage.write",
+        "system.browser.automation",
+        "system.media.image",
+        "system.media.transcode"
+      ],
+      "entry": {
+        "kind": "web-bundle",
+        "document": "web/index.html"
+      },
+      "acceptedContexts": [
+        {
+          "type": "directories",
+          "sources": [
+            "explorer-selection"
+          ],
+          "maxItems": 64
+        }
+      ]
+    },
+    {
+      "id": "text-context",
+      "title": "查看选中文字（验收）",
+      "description": "验证文字匹配与上下文传递。",
+      "entry": {
+        "kind": "web-bundle",
+        "document": "web/index.html"
+      },
+      "acceptedContexts": [
+        {
+          "type": "text",
+          "sources": [
+            "selected-text"
+          ]
+        }
+      ],
+      "requiredCapabilities": [
+        "plugin.window.manage",
+        "system.file.select",
+        "system.path.open",
+        "clipboard.current.read",
+        "clipboard.write",
+        "system.notification",
+        "system.input.paste",
+        "system.screen.capture",
+        "plugin.storage.read",
+        "plugin.storage.write",
+        "system.browser.automation",
+        "system.media.image",
+        "system.media.transcode"
+      ]
+    },
+    {
+      "id": "pair-context",
+      "title": "查看两个文件（验收）",
+      "description": "验证选中数量的下限和上限。",
+      "requiredCapabilities": [
+        "plugin.window.manage",
+        "system.file.select",
+        "system.path.open",
+        "clipboard.current.read",
+        "clipboard.write",
+        "system.notification",
+        "system.input.paste",
+        "system.screen.capture",
+        "plugin.storage.read",
+        "plugin.storage.write",
+        "system.browser.automation",
+        "system.media.image",
+        "system.media.transcode"
+      ],
+      "entry": {
+        "kind": "web-bundle",
+        "document": "web/index.html"
+      },
+      "acceptedContexts": [
+        {
+          "type": "files",
+          "sources": [
+            "explorer-selection"
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        }
+      ]
+    },
+    {
+      "id": "agent-note",
+      "title": "AI 便笺读写",
+      "description": "读取或修改插件平台验收的 AI 便笺，便笺会保存在该插件私有存储并可在插件页面查看。",
+      "entry": {
+        "kind": "node-command",
+        "module": "agent-note.cjs"
+      },
+      "presentation": {
+        "type": "command"
+      },
+      "requiredCapabilities": [
+        "plugin.storage.read",
+        "plugin.storage.write"
+      ],
+      "mcpTool": {
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string",
+              "maxLength": 4096
+            }
+          },
+          "additionalProperties": false
+        },
+        "outputSchema": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ],
+  "runtimeFiles": [
+    {
+      "path": "web/index.html",
+      "role": "web",
+      "mediaType": "text/html"
+    },
+    {
+      "path": "web/styles.css",
+      "role": "web",
+      "mediaType": "text/css"
+    },
+    {
+      "path": "web/app.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/child.html",
+      "role": "web",
+      "mediaType": "text/html"
+    },
+    {
+      "path": "web/child.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/sdk/index.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/sdk/bridge-client.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/sdk/capability-methods.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/sdk/protocol.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/sdk/invocation-context.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/sdk/theme.css",
+      "role": "web",
+      "mediaType": "text/css"
+    },
+    {
+      "path": "web/sdk/ui.css",
+      "role": "web",
+      "mediaType": "text/css"
+    },
+    {
+      "path": "web/runtime-v3/selected-text-match.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "agent-note.cjs",
+      "role": "node-command",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "preload.cjs",
+      "role": "node-preload",
+      "mediaType": "text/javascript"
+    },
+    {
+      "path": "web/workflow.mjs",
+      "role": "web",
+      "mediaType": "text/javascript"
+    }
+  ],
+  "dependencies": [],
+  "package": {
+    "format": "wtplugin",
+    "packageVersion": 1
+  }
+}

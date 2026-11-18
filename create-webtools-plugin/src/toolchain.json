@@ -1,0 +1,9 @@
+{
+  "sdkVersion": "1.16.2",
+  "developmentNode": ">=22.12",
+  "productVersion": "0.1.0",
+  "electronVersion": "44.4.5",
+  "platform": "win32",
+  "architecture": "x64",
+  "nodeAbi": "149"
+}

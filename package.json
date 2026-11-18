@@ -1,0 +1,20 @@
+{
+  "name": "webtools-plugin-workspace",
+  "private": true,
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "toolchain:check": "node scripts/sync-toolchain.mjs --check",
+    "toolchain:sync": "node scripts/sync-toolchain.mjs",
+    "test": "node --experimental-transform-types --test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "~5.9.2",
+    "vite": "^7.3.6",
+    "yauzl": "3.4.0"
+  }
+}

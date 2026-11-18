@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>模板子窗口</title>
+</head>
+<body>
+  <main class="wt-container wt-stack">
+    <h1 class="wt-title">模板子窗口</h1>
+    <label class="wt-field">
+      <span class="wt-label">发送给主窗口</span>
+      <input id="message" class="wt-input" value="来自子窗口的问候" maxlength="200">
+    </label>
+    <div><button id="send" class="wt-button wt-button-primary" type="button" disabled>发送消息</button></div>
+    <p id="status" class="wt-copy" role="status">等待宿主连接</p>
+  </main>
+  <script type="module" src="./src/child.ts"></script>
+</body>
+</html>

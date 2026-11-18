@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>插件子窗口验收</title><link rel="stylesheet" href="./sdk/ui.css"><link rel="stylesheet" href="./styles.css"></head>
+<body><main class="shell"><header class="topbar"><div><p class="eyebrow">WEBTOOLS · CUSTOM WINDOW</p><h1>插件子窗口验收</h1></div></header>
+<section class="card"><h2>窗口间通信</h2><p class="muted">这里是独立的子窗口页面，可向主窗口发送文字。</p>
+<input id="message" class="text-input wt-input" placeholder="输入要发送给主窗口的文字"><p id="status" class="muted">正在连接宿主</p>
+<div class="button-row"><button id="send" class="button button-primary" type="button">发送给主窗口</button></div></section></main>
+<script type="module" src="./child.mjs"></script></body></html>
